@@ -5,10 +5,14 @@ function loadData($section, $data)
     return app('matin-cacher')->loadData($section, $data);
 }
 
-function forget($section, $item = null)
+function cacheitem($item, $value = '')
 {
-    $item = $section . (empty($item) ? '' : ".$item");
-    return app('matin-cacher')->getItem($item);
+    return app('matin-cacher')->setItem($item, $value);
+}
+
+function removeCache($item)
+{
+    return app('matin-cacher')->forget($item);
 }
 
 function getItem($section, $item = null)
