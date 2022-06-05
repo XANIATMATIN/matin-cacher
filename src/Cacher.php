@@ -8,12 +8,12 @@ class Cacher
     protected $socketClient;
     public function __construct()
     {
-        $this->socketClient = new SocketClient(config('matinCacher.easySocket.host'));
+        $this->socketClient = env('MATIN_CACHER_USABLE') ? new SocketClient(config('matinCacher.easySocket.host')) : false;
     }
 
     public function loadData($section, $data)
     {
-        if ($this->socketClient->isConnected) {
+        if ($this->socketClient->isConnected ?? false) {
             $data = [
                 'api' => 'load',
                 'variables' => ['section' => $section],
@@ -27,7 +27,7 @@ class Cacher
 
     public function setItem($item, $value)
     {
-        if ($this->socketClient->isConnected) {
+        if ($this->socketClient->isConnected ?? false) {
             $data = [
                 'api' => 'set',
                 'variables' => [],
@@ -44,7 +44,7 @@ class Cacher
 
     public function forget($item)
     {
-        if ($this->socketClient->isConnected) {
+        if ($this->socketClient->isConnected ?? false) {
             $data = [
                 'api' => 'forget',
                 'variables' => [],
@@ -60,7 +60,7 @@ class Cacher
 
     public function getItem($item)
     {
-        if ($this->socketClient->isConnected) {
+        if ($this->socketClient->isConnected ?? false) {
             $data = [
                 'api' => 'get',
                 'variables' => [],
@@ -74,9 +74,23 @@ class Cacher
         }
     }
 
+    public function allData()
+    {
+        if ($this->socketClient->isConnected ?? false) {
+            $data = [
+                'api' => 'allData',
+                'variables' => [],
+                'data' => [],
+            ];
+            return $this->socketClient->sendAndGetResponse($data);
+        } else {
+            return false;
+        }
+    }
+
     public function databaseConfigs($data)
     {
-        if ($this->socketClient->isConnected) {
+        if ($this->socketClient->isConnected ?? false) {
             $data = [
                 'api' => 'database/configs',
                 'variables' => [],
@@ -90,7 +104,7 @@ class Cacher
 
     public function feedTable($table)
     {
-        if ($this->socketClient->isConnected) {
+        if ($this->socketClient->isConnected ?? false) {
             $data = [
                 'api' => 'database/loadTable',
                 'variables' => [],
@@ -106,7 +120,7 @@ class Cacher
 
     public function refreshTable($table)
     {
-        if ($this->socketClient->isConnected) {
+        if ($this->socketClient->isConnected ?? false) {
             $data = [
                 'api' => 'database/refreshTable',
                 'variables' => [],
@@ -122,7 +136,7 @@ class Cacher
 
     public function getTableItem($table, $column, $value)
     {
-        if ($this->socketClient->isConnected) {
+        if ($this->socketClient->isConnected ?? false) {
             $data = [
                 'api' => 'database/find',
                 'variables' => [],

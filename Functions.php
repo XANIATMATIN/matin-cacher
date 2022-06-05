@@ -12,6 +12,12 @@ function cacheitem($item, $value = '')
     return $response === false ? $response : json_decode($response, true);
 }
 
+function allCached()
+{
+    $response = app('matin-cacher')->allData();
+    return $response === false ? $response : json_decode($response, true);
+}
+
 function removeCache($item)
 {
     $response = app('matin-cacher')->forget($item);

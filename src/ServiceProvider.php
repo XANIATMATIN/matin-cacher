@@ -14,8 +14,7 @@ class ServiceProvider extends BaseServiceProvider
     public function boot()
     {
         $this->app->singleton('matin-cacher', function ($app) {
-            $archiver = new Cacher;
-            return $archiver;
+            return new Cacher;
         });
     }
 
