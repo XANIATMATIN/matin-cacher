@@ -134,16 +134,16 @@ class Cacher
         }
     }
 
-    public function getTableItem($table, $column, $value)
+    public function getTDatabaseItem($table, array $conditions = [], array $relations = [])
     {
         if ($this->socketClient->isConnected ?? false) {
             $data = [
-                'api' => 'database/find',
+                'api' => 'database/get',
                 'variables' => [],
                 'data' => [
                     'table' => $table,
-                    'column' => $column,
-                    'value' => $value,
+                    'conditions' => $conditions,
+                    'relations' => $relations,
                 ],
             ];
             return $this->socketClient->sendAndGetResponse($data);
