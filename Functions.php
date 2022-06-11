@@ -42,14 +42,15 @@ function feedTable($tableName)
     return $response === false ? $response : json_decode($response, true);
 }
 
-function refreshTable($tableName)
+function refreshCachedTables($tableNames)
 {
-    $response = app('matin-cacher')->refreshTable($tableName);
+    $tableNames = (array) $tableNames;
+    $response = app('matin-cacher')->refreshTable($tableNames);
     return $response === false ? $response : json_decode($response, true);
 }
 
-function cachedDatabase(string $tableName, array $conditions = [], array $relations = [])
+function getTableItem($tableName, $column, $value)
 {
-    $response = app('matin-cacher')->getTDatabaseItem($tableName, $conditions, $relations);
+    $response = app('matin-cacher')->getTableItem($tableName, $column, $value);
     return $response === false ? $response : json_decode($response, true);
 }

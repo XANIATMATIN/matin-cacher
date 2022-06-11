@@ -118,14 +118,14 @@ class Cacher
         }
     }
 
-    public function refreshTable($table)
+    public function refreshTable(array $tables)
     {
         if ($this->socketClient->isConnected ?? false) {
             $data = [
                 'api' => 'database/refreshTable',
                 'variables' => [],
                 'data' => [
-                    'table' => $table,
+                    'tables' => $tables,
                 ],
             ];
             return $this->socketClient->sendAndGetResponse($data);
@@ -134,16 +134,16 @@ class Cacher
         }
     }
 
-    public function getTDatabaseItem($table, array $conditions = [], array $relations = [])
+    public function getTableItem($table, $column, $value)
     {
         if ($this->socketClient->isConnected ?? false) {
             $data = [
-                'api' => 'database/get',
+                'api' => 'database/find',
                 'variables' => [],
                 'data' => [
                     'table' => $table,
-                    'conditions' => $conditions,
-                    'relations' => $relations,
+                    'column' => $column,
+                    'value' => $value,
                 ],
             ];
             return $this->socketClient->sendAndGetResponse($data);
