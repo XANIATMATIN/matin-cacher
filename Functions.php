@@ -49,7 +49,7 @@ function refreshCachedTables($tableNames)
     return $response === false ? $response : json_decode($response, true);
 }
 
-function getTableItem($tableName, $column, $value)
+function cachedDatabase($tableName, $column, $value)
 {
     $response = app('matin-cacher')->getTableItem($tableName, $column, $value);
     return $response === false ? $response : json_decode($response, true);
