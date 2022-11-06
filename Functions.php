@@ -54,3 +54,9 @@ function cachedDatabase(string $tableName, array $conditions = [], array $relati
     $response = app('matin-cacher')->getTDatabaseItem($tableName, $conditions, $relations);
     return $response === false ? $response : json_decode($response, true);
 }
+
+function loadedTableNames()
+{
+    $response = app('matin-cacher')->loadedTableNames();
+    return $response === false ? $response : json_decode($response, true);
+}

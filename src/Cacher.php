@@ -134,6 +134,20 @@ class Cacher
         }
     }
 
+    public function loadedTableNames()
+    {
+        if ($this->socketClient->isConnected ?? false) {
+            $data = [
+                'api' => 'database/loadedTableNames',
+                'variables' => [],
+                'data' => [],
+            ];
+            return $this->socketClient->sendAndGetResponse($data);
+        } else {
+            return false;
+        }
+    }
+
     public function getTDatabaseItem($table, array $conditions = [], array $relations = [])
     {
         if ($this->socketClient->isConnected ?? false) {
