@@ -15,6 +15,7 @@ class Cacher
     {
         if ($this->socketClient->isConnected ?? false) {
             $data = [
+                'pid' => app('log-system')->getpid(),
                 'api' => 'load',
                 'variables' => ['section' => $section],
                 'data' => $data,
@@ -29,6 +30,7 @@ class Cacher
     {
         if ($this->socketClient->isConnected ?? false) {
             $data = [
+                'pid' => app('log-system')->getpid(),
                 'api' => 'set',
                 'variables' => [],
                 'data' => [
@@ -46,6 +48,7 @@ class Cacher
     {
         if ($this->socketClient->isConnected ?? false) {
             $data = [
+                'pid' => app('log-system')->getpid(),
                 'api' => 'forget',
                 'variables' => [],
                 'data' => [
@@ -62,6 +65,7 @@ class Cacher
     {
         if ($this->socketClient->isConnected ?? false) {
             $data = [
+                'pid' => app('log-system')->getpid(),
                 'api' => 'get',
                 'variables' => [],
                 'data' => [
@@ -78,6 +82,7 @@ class Cacher
     {
         if ($this->socketClient->isConnected ?? false) {
             $data = [
+                'pid' => app('log-system')->getpid(),
                 'api' => 'allData',
                 'variables' => [],
                 'data' => [],
@@ -92,6 +97,7 @@ class Cacher
     {
         if ($this->socketClient->isConnected ?? false) {
             $data = [
+                'pid' => app('log-system')->getpid(),
                 'api' => 'database/configs',
                 'variables' => [],
                 'data' => $data,
@@ -106,6 +112,7 @@ class Cacher
     {
         if ($this->socketClient->isConnected ?? false) {
             $data = [
+                'pid' => app('log-system')->getpid(),
                 'api' => 'database/loadTable',
                 'variables' => [],
                 'data' => [
@@ -122,6 +129,7 @@ class Cacher
     {
         if ($this->socketClient->isConnected ?? false) {
             $data = [
+                'pid' => app('log-system')->getpid(),
                 'api' => 'database/refreshTable',
                 'variables' => [],
                 'data' => [
@@ -138,6 +146,7 @@ class Cacher
     {
         if ($this->socketClient->isConnected ?? false) {
             $data = [
+                'pid' => app('log-system')->getpid(),
                 'api' => 'database/loadedTableNames',
                 'variables' => [],
                 'data' => [],
@@ -152,6 +161,7 @@ class Cacher
     {
         if ($this->socketClient->isConnected ?? false) {
             $data = [
+                'pid' => app('log-system')->getpid(),
                 'api' => 'database/get',
                 'variables' => [],
                 'data' => [
