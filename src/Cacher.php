@@ -157,7 +157,7 @@ class Cacher
         }
     }
 
-    public function getTDatabaseItem($table, array $conditions = [], array $relations = [])
+    public function getTDatabaseItem($table, array $conditions = [], array $relations = [], array $pluck = [])
     {
         if ($this->socketClient->isConnected ?? false) {
             $data = [
@@ -168,6 +168,7 @@ class Cacher
                     'table' => $table,
                     'conditions' => $conditions,
                     'relations' => $relations,
+                    'pluck' => $pluck,
                 ],
             ];
             return $this->socketClient->sendAndGetResponse($data);

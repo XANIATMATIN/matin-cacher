@@ -49,9 +49,9 @@ function refreshCachedTables($tableNames)
     return $response === false ? $response : json_decode($response, true);
 }
 
-function cachedDatabase(string $tableName, array $conditions = [], array $relations = [])
+function cachedDatabase(string $tableName, array $conditions = [], array $relations = [], array $pluck = [])
 {
-    $response = app('matin-cacher')->getTDatabaseItem($tableName, $conditions, $relations);
+    $response = app('matin-cacher')->getTDatabaseItem($tableName, $conditions, $relations, $pluck);
     return $response === false ? $response : json_decode($response, true);
 }
 
