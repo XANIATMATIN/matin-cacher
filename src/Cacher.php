@@ -176,4 +176,21 @@ class Cacher
             return false;
         }
     }
+
+    public function isCached(string $item)
+    {
+        if ($this->socketClient->isConnected ?? false) {
+            $data = [
+                'pid' => app('log-system')->getpid(),
+                'api' => 'isCached',
+                'variables' => [],
+                'data' => [
+                    'item' => $item,
+                ],
+            ];
+            return $this->socketClient->sendAndGetResponse($data);
+        } else {
+            return false;
+        }
+    }
 }
