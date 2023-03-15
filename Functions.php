@@ -60,3 +60,17 @@ function loadedTableNames()
     $response = app('matin-cacher')->loadedTableNames();
     return $response === false ? $response : json_decode($response, true);
 }
+
+/**
+ * Checks if an item is cached
+ *
+ *
+ * @param  string,     $item     The item to check
+ *
+ * @return bool|string    false if cache server is not reachable, 'cached' if the item is cached, and 'not-cached' otherwise
+ */
+function isCached(string $item)
+{
+    $response = app('matin-cacher')->isCached($item);
+    return $response === false ? $response : json_decode($response, true)['value'] ?? false;
+}
