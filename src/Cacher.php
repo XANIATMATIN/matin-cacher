@@ -193,4 +193,22 @@ class Cacher
             return false;
         }
     }
+
+    public function setTag(string $source, string $tag)
+    {
+        if ($this->socketClient->isConnected ?? false) {
+            $data = [
+                'pid' => app('log-system')->getpid(),
+                'api' => 'setTag',
+                'variables' => [],
+                'data' => [
+                    'source' => $source,
+                    'tag' => $tag,
+                ],
+            ];
+            return $this->socketClient->sendAndGetResponse($data);
+        } else {
+            return false;
+        }
+    }
 }

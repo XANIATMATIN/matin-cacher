@@ -74,3 +74,9 @@ function isCached(string $item)
     $response = app('matin-cacher')->isCached($item);
     return $response === false ? $response : json_decode($response, true)['value'] ?? false;
 }
+
+function tagCache(string $source, string $tag)
+{
+    $response = app('matin-cacher')->setTag($source, $tag);
+    return $response === false ? $response : json_decode($response, true);
+}
