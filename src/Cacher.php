@@ -52,7 +52,7 @@ class Cacher
                 'api' => 'forget',
                 'variables' => [],
                 'data' => [
-                    'item' => $item,
+                    'items' => $item,
                 ],
             ];
             return $this->socketClient->sendAndGetResponse($data);
