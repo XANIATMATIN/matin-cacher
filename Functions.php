@@ -86,3 +86,9 @@ function findCachedTag(string $key)
     $response = app('matin-cacher')->findTag($key);
     return $response === false ? $response : json_decode($response, true)['tag'] ?? '';
 }
+
+function tagIsCached(string $tag)
+{
+    $response = app('matin-cacher')->tagAvailability($tag);
+    return $response === false ? $response : json_decode($response, true)['available'];
+}
