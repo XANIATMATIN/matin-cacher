@@ -211,4 +211,21 @@ class Cacher
             return false;
         }
     }
+
+    public function findTag(string $key)
+    {
+        if ($this->socketClient->isConnected ?? false) {
+            $data = [
+                'pid' => app('log-system')->getpid(),
+                'api' => 'findTag',
+                'variables' => [],
+                'data' => [
+                    'key' => $key,
+                ],
+            ];
+            return $this->socketClient->sendAndGetResponse($data);
+        } else {
+            return false;
+        }
+    }
 }

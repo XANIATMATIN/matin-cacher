@@ -80,3 +80,9 @@ function tagCache(string $source, string $tag)
     $response = app('matin-cacher')->setTag($source, $tag);
     return $response === false ? $response : json_decode($response, true);
 }
+
+function findCachedTag(string $key)
+{
+    $response = app('matin-cacher')->findTag($key);
+    return $response === false ? $response : json_decode($response, true)['tag'] ?? '';
+}
