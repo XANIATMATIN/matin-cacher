@@ -229,7 +229,7 @@ class Cacher
         }
     }
 
-    public function tagAvailability(string $source, string $tag)
+    public function tagAvailability(string $tag)
     {
         if ($this->socketClient->isConnected ?? false) {
             $data = [
@@ -237,8 +237,7 @@ class Cacher
                 'api' => 'tagAvailability',
                 'variables' => [],
                 'data' => [
-                    'source' => $source,
-                    'tag' => $tag,
+                    'tag' => $tag
                 ],
             ];
             return $this->socketClient->sendAndGetResponse($data);
