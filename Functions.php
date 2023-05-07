@@ -20,12 +20,14 @@ function allCached()
 
 function removeCache($item)
 {
+    if (empty($tag)) return true;
     $response = app('matin-cacher')->forget($item);
     return $response === false ? $response : json_decode($response, true);
 }
 
 function getCachedItem($item)
 {
+    if (empty($item)) return false;
     $response = app('matin-cacher')->getItem($item);
     return $response === false ? $response : json_decode($response, true)['value'] ?? null;
 }
@@ -71,6 +73,7 @@ function loadedTableNames()
  */
 function isCached(string $item)
 {
+    if (empty($item)) return false;
     $response = app('matin-cacher')->isCached($item);
     return $response === false ? $response : json_decode($response, true)['value'] ?? false;
 }
@@ -83,12 +86,14 @@ function tagCache(string $source, string $tag)
 
 function findCachedTag(string $key)
 {
+    if (empty($key)) return false;
     $response = app('matin-cacher')->findTag($key);
     return $response === false ? $response : json_decode($response, true)['tag'] ?? '';
 }
 
 function tagIsCached(string $tag)
 {
+    if (empty($tag)) return false;
     $response = app('matin-cacher')->tagAvailability($tag);
     return $response === false ? $response : json_decode($response, true)['available'];
 }
