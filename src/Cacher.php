@@ -10,7 +10,6 @@ class Cacher
     {
         $this->socketClient['tables'] = new SocketClient(config('matinCacher.clusters.tables.host'), config('matinCacher.clusters.tables.port'));
         $this->socketClient['localInventory'] = new SocketClient(config('matinCacher.clusters.localInventory.host'), config('matinCacher.clusters.localInventory.port'));
-        $this->socketClient['searchProgress'] = new SocketClient(config('matinCacher.clusters.searchProgress.host'), config('matinCacher.clusters.searchProgress.port'));
         $this->socketClient['popularRoutes'] = new SocketClient(config('matinCacher.clusters.popularRoutes.host'), config('matinCacher.clusters.popularRoutes.port'));
         $this->socketClient['default'] = new SocketClient(config('matinCacher.clusters.default.host'), config('matinCacher.clusters.default.port'));
     }

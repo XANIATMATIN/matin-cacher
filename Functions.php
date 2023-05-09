@@ -6,9 +6,9 @@ function cacheitem($item, $value = '')
     return $response === false ? $response : json_decode($response, true);
 }
 
-function allCached()
+function allCached($cluster = 'default')
 {
-    $response = app('matin-cacher')->allData();
+    $response = app('matin-cacher')->allData($cluster);
     return $response === false ? $response : json_decode($response, true);
 }
 
