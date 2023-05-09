@@ -8,27 +8,18 @@ class Cacher
     protected $socketClient;
     public function __construct()
     {
-        $this->socketClient = env('MATIN_CACHER_USABLE') ? new SocketClient(config('matinCacher.easySocket.host')) : false;
-    }
-
-    public function loadData($section, $data)
-    {
-        if ($this->socketClient->isConnected ?? false) {
-            $data = [
-                'pid' => app('log-system')->getpid(),
-                'api' => 'load',
-                'variables' => ['section' => $section],
-                'data' => $data,
-            ];
-            return $this->socketClient->sendAndGetResponse($data);
-        } else {
-            return false;
-        }
+        $this->socketClient['tables'] = new SocketClient(config('matinCacher.clusters.tables.host'), config('matinCacher.clusters.tables.port'));
+        $this->socketClient['localInventory'] = new SocketClient(config('matinCacher.clusters.localInventory.host'), config('matinCacher.clusters.localInventory.port'));
+        $this->socketClient['searchProgress'] = new SocketClient(config('matinCacher.clusters.searchProgress.host'), config('matinCacher.clusters.searchProgress.port'));
+        $this->socketClient['popularRoutes'] = new SocketClient(config('matinCacher.clusters.popularRoutes.host'), config('matinCacher.clusters.popularRoutes.port'));
+        $this->socketClient['default'] = new SocketClient(config('matinCacher.clusters.default.host'), config('matinCacher.clusters.default.port'));
     }
 
     public function setItem($item, $value)
     {
-        if ($this->socketClient->isConnected ?? false) {
+        $cluster = explode('.', $item)[0];
+        $socketClient = $this->socketClient[$cluster] ?? $this->socketClient['default'];
+        if ($socketClient->isConnected ?? false) {
             $data = [
                 'pid' => app('log-system')->getpid(),
                 'api' => 'set',
@@ -38,7 +29,7 @@ class Cacher
                     'value' => $value
                 ],
             ];
-            return $this->socketClient->sendAndGetResponse($data);
+            return $socketClient->sendAndGetResponse($data);
         } else {
             return false;
         }
@@ -46,7 +37,9 @@ class Cacher
 
     public function forget($item)
     {
-        if ($this->socketClient->isConnected ?? false) {
+        $cluster = explode('.', $item)[0];
+        $socketClient = $this->socketClient[$cluster] ?? $this->socketClient['default'];
+        if ($socketClient->isConnected ?? false) {
             $data = [
                 'pid' => app('log-system')->getpid(),
                 'api' => 'forget',
@@ -55,7 +48,7 @@ class Cacher
                     'items' => $item,
                 ],
             ];
-            return $this->socketClient->sendAndGetResponse($data);
+            return $socketClient->sendAndGetResponse($data);
         } else {
             return false;
         }
@@ -63,7 +56,9 @@ class Cacher
 
     public function getItem($item)
     {
-        if ($this->socketClient->isConnected ?? false) {
+        $cluster = explode('.', $item)[0];
+        $socketClient = $this->socketClient[$cluster] ?? $this->socketClient['default'];
+        if ($socketClient->isConnected ?? false) {
             $data = [
                 'pid' => app('log-system')->getpid(),
                 'api' => 'get',
@@ -72,54 +67,24 @@ class Cacher
                     'item' => $item,
                 ],
             ];
-            return $this->socketClient->sendAndGetResponse($data);
+            return $socketClient->sendAndGetResponse($data);
         } else {
             return false;
         }
     }
 
-    public function allData()
+    public function allData($cluster = 'default')
     {
-        if ($this->socketClient->isConnected ?? false) {
+        $socketClient = $this->socketClient[$cluster] ?? null;
+        if (empty($socketClient)) return false;
+        if ($socketClient->isConnected ?? false) {
             $data = [
                 'pid' => app('log-system')->getpid(),
                 'api' => 'allData',
                 'variables' => [],
                 'data' => [],
             ];
-            return $this->socketClient->sendAndGetResponse($data);
-        } else {
-            return false;
-        }
-    }
-
-    public function databaseConfigs($data)
-    {
-        if ($this->socketClient->isConnected ?? false) {
-            $data = [
-                'pid' => app('log-system')->getpid(),
-                'api' => 'database/configs',
-                'variables' => [],
-                'data' => $data,
-            ];
-            return $this->socketClient->sendAndGetResponse($data);
-        } else {
-            return false;
-        }
-    }
-
-    public function feedTable($table)
-    {
-        if ($this->socketClient->isConnected ?? false) {
-            $data = [
-                'pid' => app('log-system')->getpid(),
-                'api' => 'database/loadTable',
-                'variables' => [],
-                'data' => [
-                    'table' => $table,
-                ],
-            ];
-            return $this->socketClient->sendAndGetResponse($data);
+            return $socketClient->sendAndGetResponse($data);
         } else {
             return false;
         }
@@ -127,7 +92,7 @@ class Cacher
 
     public function refreshTable(array $tables)
     {
-        if ($this->socketClient->isConnected ?? false) {
+        if ($this->socketClient['tables']->isConnected ?? false) {
             $data = [
                 'pid' => app('log-system')->getpid(),
                 'api' => 'database/refreshTable',
@@ -136,22 +101,7 @@ class Cacher
                     'tables' => $tables,
                 ],
             ];
-            return $this->socketClient->sendAndGetResponse($data);
-        } else {
-            return false;
-        }
-    }
-
-    public function loadedTableNames()
-    {
-        if ($this->socketClient->isConnected ?? false) {
-            $data = [
-                'pid' => app('log-system')->getpid(),
-                'api' => 'database/loadedTableNames',
-                'variables' => [],
-                'data' => [],
-            ];
-            return $this->socketClient->sendAndGetResponse($data);
+            return $this->socketClient['tables']->sendAndGetResponse($data);
         } else {
             return false;
         }
@@ -159,7 +109,7 @@ class Cacher
 
     public function getTDatabaseItem($table, array $conditions = [], array $pluck = [], int $count = 0)
     {
-        if ($this->socketClient->isConnected ?? false) {
+        if ($this->socketClient['tables']->isConnected ?? false) {
             $data = [
                 'pid' => app('log-system')->getpid(),
                 'api' => 'database/get',
@@ -171,7 +121,7 @@ class Cacher
                     'count' => $count,
                 ],
             ];
-            return $this->socketClient->sendAndGetResponse($data);
+            return $this->socketClient['tables']->sendAndGetResponse($data);
         } else {
             return false;
         }
@@ -179,7 +129,9 @@ class Cacher
 
     public function isCached(string $item)
     {
-        if ($this->socketClient->isConnected ?? false) {
+        $cluster = explode('.', $item)[0];
+        $socketClient = $this->socketClient[$cluster] ?? $this->socketClient['default'];
+        if ($socketClient->isConnected ?? false) {
             $data = [
                 'pid' => app('log-system')->getpid(),
                 'api' => 'isCached',
@@ -188,7 +140,7 @@ class Cacher
                     'item' => $item,
                 ],
             ];
-            return $this->socketClient->sendAndGetResponse($data);
+            return $socketClient->sendAndGetResponse($data);
         } else {
             return false;
         }
@@ -196,7 +148,7 @@ class Cacher
 
     public function setTag(string $source, string $tag)
     {
-        if ($this->socketClient->isConnected ?? false) {
+        if ($this->socketClient['localInventory']->isConnected ?? false) {
             $data = [
                 'pid' => app('log-system')->getpid(),
                 'api' => 'setTag',
@@ -206,7 +158,7 @@ class Cacher
                     'tag' => $tag,
                 ],
             ];
-            return $this->socketClient->sendAndGetResponse($data);
+            return $this->socketClient['localInventory']->sendAndGetResponse($data);
         } else {
             return false;
         }
@@ -214,7 +166,7 @@ class Cacher
 
     public function findTag(string $key)
     {
-        if ($this->socketClient->isConnected ?? false) {
+        if ($this->socketClient['localInventory']->isConnected ?? false) {
             $data = [
                 'pid' => app('log-system')->getpid(),
                 'api' => 'findTag',
@@ -223,7 +175,7 @@ class Cacher
                     'key' => $key,
                 ],
             ];
-            return $this->socketClient->sendAndGetResponse($data);
+            return $this->socketClient['localInventory']->sendAndGetResponse($data);
         } else {
             return false;
         }
@@ -231,7 +183,7 @@ class Cacher
 
     public function tagAvailability(string $tag)
     {
-        if ($this->socketClient->isConnected ?? false) {
+        if ($this->socketClient['localInventory']->isConnected ?? false) {
             $data = [
                 'pid' => app('log-system')->getpid(),
                 'api' => 'tagAvailability',
@@ -240,7 +192,7 @@ class Cacher
                     'tag' => $tag
                 ],
             ];
-            return $this->socketClient->sendAndGetResponse($data);
+            return $this->socketClient['localInventory']->sendAndGetResponse($data);
         } else {
             return false;
         }

@@ -1,11 +1,5 @@
 <?php
 
-function loadData($section, $data)
-{
-    $response = app('matin-cacher')->loadData($section, $data);
-    return $response === false ? $response : json_decode($response, true);
-}
-
 function cacheitem($item, $value = '')
 {
     $response = app('matin-cacher')->setItem($item, $value);
@@ -20,7 +14,7 @@ function allCached()
 
 function removeCache($item)
 {
-    if (empty($tag)) return true;
+    if (empty($item)) return true;
     $response = app('matin-cacher')->forget($item);
     return $response === false ? $response : json_decode($response, true);
 }
@@ -30,18 +24,6 @@ function getCachedItem($item)
     if (empty($item)) return false;
     $response = app('matin-cacher')->getItem($item);
     return $response === false ? $response : json_decode($response, true)['value'] ?? null;
-}
-
-function databaseConfigs()
-{
-    $response = app('matin-cacher')->databaseConfigs(config('database.connections.mysql'));
-    return $response === false ? $response : json_decode($response, true);
-}
-
-function feedTable($tableName)
-{
-    $response = app('matin-cacher')->feedTable($tableName);
-    return $response === false ? $response : json_decode($response, true);
 }
 
 function refreshCachedTables($tableNames)
@@ -55,12 +37,6 @@ function cachedDatabase(string $tableName, array $conditions = [], array $pluck 
 {
     $response = app('matin-cacher')->getTDatabaseItem($tableName, $conditions, $pluck, $count);
     return $response === false ? $response : json_decode($response, true)['value'] ?? [];
-}
-
-function loadedTableNames()
-{
-    $response = app('matin-cacher')->loadedTableNames();
-    return $response === false ? $response : json_decode($response, true);
 }
 
 /**
