@@ -34,22 +34,25 @@ class Cacher
         }
     }
 
-    public function forget($item)
+    public function forget($items)
     {
-        $cluster = explode('.', $item)[0];
-        $socketClient = $this->socketClient[$cluster] ?? $this->socketClient['default'];
-        if ($socketClient->isConnected ?? false) {
-            $data = [
-                'pid' => app('log-system')->getpid(),
-                'api' => 'forget',
-                'variables' => [],
-                'data' => [
-                    'items' => $item,
-                ],
-            ];
-            return $socketClient->sendAndGetResponse($data);
-        } else {
-            return false;
+        foreach ((array) $items ?? [] as $item) {
+            $cluster = explode('.', $item ?? '')[0];
+            $data[$cluster] = $item;
+        }
+        foreach ($data ?? [] as $cluster => $items) {
+            $socketClient = $this->socketClient[$cluster] ?? $this->socketClient['default'];
+            if ($socketClient->isConnected ?? false) {
+                $data = [
+                    'pid' => app('log-system')->getpid(),
+                    'api' => 'forget',
+                    'variables' => [],
+                    'data' => [
+                        'items' => $item,
+                    ],
+                ];
+                $socketClient->sendAndGetResponse($data);
+            }
         }
     }
 
