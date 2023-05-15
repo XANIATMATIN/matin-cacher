@@ -38,7 +38,7 @@ class Cacher
     {
         foreach ((array) $items ?? [] as $item) {
             $cluster = explode('.', $item ?? '')[0];
-            $data[$cluster] = $item;
+            $data[$cluster][] = $item;
         }
         foreach ($data ?? [] as $cluster => $items) {
             $socketClient = $this->socketClient[$cluster] ?? $this->socketClient['default'];
@@ -48,7 +48,7 @@ class Cacher
                     'api' => 'forget',
                     'variables' => [],
                     'data' => [
-                        'items' => $item,
+                        'items' => $items,
                     ],
                 ];
                 $socketClient->sendAndGetResponse($data);
