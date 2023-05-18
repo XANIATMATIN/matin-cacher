@@ -166,7 +166,7 @@ class Cacher
         }
     }
 
-    public function findTag(string $key)
+    public function findTag(string $key, bool $partial = false)
     {
         if ($this->socketClient['localInventory']->isConnected ?? false) {
             $data = [
@@ -175,6 +175,7 @@ class Cacher
                 'variables' => [],
                 'data' => [
                     'key' => $key,
+                    'partial' => $partial
                 ],
             ];
             return $this->socketClient['localInventory']->sendAndGetResponse($data);

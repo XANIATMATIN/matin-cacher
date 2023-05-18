@@ -47,7 +47,7 @@ function cachedDatabase(string $tableName, array $conditions = [], array $pluck 
  *
  * @return bool|string    false if cache server is not reachable, 'cached' if the item is cached, and 'not-cached' otherwise
  */
-function isCached(string $item)
+function isCached(string|null $item)
 {
     if (empty($item)) return false;
     $response = app('matin-cacher')->isCached($item);
@@ -60,14 +60,14 @@ function tagCache(string $source, string $tag)
     return $response === false ? $response : json_decode($response, true);
 }
 
-function findCachedTag(string $key)
+function findCachedTag(string|null $key, bool $partial = false)
 {
     if (empty($key)) return false;
-    $response = app('matin-cacher')->findTag($key);
+    $response = app('matin-cacher')->findTag($key, $partial);
     return $response === false ? $response : json_decode($response, true)['tag'] ?? '';
 }
 
-function tagIsCached(string $tag)
+function tagIsCached(string|null $tag)
 {
     if (empty($tag)) return false;
     $response = app('matin-cacher')->tagAvailability($tag);
