@@ -8,9 +8,11 @@ class SocketClient extends EasySocketClient
 {
     public function sendAndGetResponse($data = '')
     {
-        $data = json_encode($data) . "\0";
-        $this->writeOnSocket($data);
-        $input = $this->readSocket();
-        return $input;
+        if (!$this->writeOnSocket(app('easy-socket')->prepareMessage(json_encode($data)))) {
+            ///> it means the write couldn't happen, probably bc of a broken pipe
+            ///> we'll send this back to try reconnecting the socket
+            return 'TryAgain'; 
+        }
+        return $this->readSocket();
     }
 }
