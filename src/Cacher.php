@@ -12,6 +12,7 @@ class Cacher
         $this->connectClient('localInventory');
         $this->connectClient('popularRoutes');
         $this->connectClient('default');
+        $this->connectClient('supplier');
     }
 
     protected function connectClient($cluster)
