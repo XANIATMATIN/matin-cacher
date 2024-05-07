@@ -6,36 +6,11 @@ namespace MatinUtils\MatinCacher;
 class Cacher
 {
     protected $socketClient;
-    public function __construct()
-    {
-        $this->connectClient('tables');
-        $this->connectClient('localInventory');
-        $this->connectClient('popularRoutes');
-        $this->connectClient('default');
-        $this->connectClient('supplier');
-    }
-
-    protected function connectClient($cluster)
-    {
-        $this->socketClient[$cluster] = new SocketClient(config("matinCacher.clusters.$cluster.host"), config("matinCacher.clusters.$cluster.port"));
-    }
-
-    protected function sendData($toSend, $cluster)
-    {
-        $response = $this->socketClient[$cluster]->sendAndGetResponse($toSend);
-        if ($response === 'TryAgain') {
-            ///> it means the write couldn't happen, probably bc of a broken pipe
-            ///> we'll reconnect the socket and try one more time
-            $this->connectClient($cluster);
-            $response = $this->socketClient[$cluster]->sendAndGetResponse($toSend);
-        }
-        return $response;
-    }
+    protected $availableClusters = ['tables', 'localInventory', 'popularRoutes', 'default', 'supplier'];
 
     public function setItem($item, $value)
     {
         $cluster = explode('.', $item)[0];
-        $cluster = empty($this->socketClient[$cluster]) ? 'default' : $cluster;
         return $this->sendData([
             'pid' => app('log-system')->getpid(),
             'api' => 'set',
@@ -54,7 +29,6 @@ class Cacher
             $data[$cluster][] = $item;
         }
         foreach ($data ?? [] as $cluster => $items) {
-            $cluster = empty($this->socketClient[$cluster]) ? 'default' : $cluster;
             $this->sendData([
                 'pid' => app('log-system')->getpid(),
                 'api' => 'forget',
@@ -69,7 +43,6 @@ class Cacher
     public function getItem($item)
     {
         $cluster = explode('.', $item)[0];
-        $cluster = empty($this->socketClient[$cluster]) ? 'default' : $cluster;
         return $this->sendData([
             'pid' => app('log-system')->getpid(),
             'api' => 'get',
@@ -82,7 +55,6 @@ class Cacher
 
     public function allData($cluster = 'default')
     {
-        if (empty($this->socketClient[$cluster])) return false;
         return $this->sendData([
             'pid' => app('log-system')->getpid(),
             'api' => 'allData',
@@ -93,7 +65,6 @@ class Cacher
 
     public function refreshTable(array $tables)
     {
-        $cluster = 'tables';
         return $this->sendData([
             'pid' => app('log-system')->getpid(),
             'api' => 'database/refreshTable',
@@ -101,12 +72,11 @@ class Cacher
             'data' => [
                 'tables' => $tables,
             ],
-        ], $cluster);
+        ], 'tables');
     }
 
     public function getTDatabaseItem($table, array $conditions = [], array $pluck = [], int $count = 0)
     {
-        $cluster = 'tables';
         return $this->sendData([
             'pid' => app('log-system')->getpid(),
             'api' => 'database/get',
@@ -117,13 +87,12 @@ class Cacher
                 'pluck' => $pluck,
                 'count' => $count,
             ],
-        ], $cluster);
+        ], 'tables');
     }
 
     public function isCached(string $item)
     {
         $cluster = explode('.', $item)[0];
-        $cluster = empty($this->socketClient[$cluster]) ? 'default' : $cluster;
         return $this->sendData([
             'pid' => app('log-system')->getpid(),
             'api' => 'isCached',
@@ -136,7 +105,6 @@ class Cacher
 
     public function setTag(string $source, string $tag)
     {
-        $cluster = 'localInventory';
         return $this->sendData([
             'pid' => app('log-system')->getpid(),
             'api' => 'setTag',
@@ -145,12 +113,11 @@ class Cacher
                 'source' => $source,
                 'tag' => $tag,
             ],
-        ], $cluster);
+        ], 'localInventory');
     }
 
     public function findTag(string $key, bool $partial = false)
     {
-        $cluster = 'localInventory';
         return $this->sendData([
             'pid' => app('log-system')->getpid(),
             'api' => 'findTag',
@@ -159,12 +126,11 @@ class Cacher
                 'key' => $key,
                 'partial' => $partial
             ],
-        ], $cluster);
+        ], 'localInventory');
     }
 
     public function tagAvailability(string $tag)
     {
-        $cluster = 'localInventory';
         return $this->sendData([
             'pid' => app('log-system')->getpid(),
             'api' => 'tagAvailability',
@@ -172,6 +138,27 @@ class Cacher
             'data' => [
                 'tag' => $tag
             ],
-        ], $cluster);
+        ], 'localInventory');
+    }
+
+    protected function sendData($toSend, $cluster)
+    {
+        $cluster = in_array($cluster, $this->availableClusters) ? $cluster : 'default';
+        if (empty($this->socketClient[$cluster])) {
+            $this->connectClient($cluster);
+        }
+        $response = $this->socketClient[$cluster]->sendAndGetResponse($toSend);
+        if ($response === 'TryAgain') {
+            ///> it means the write couldn't happen, probably bc of a broken pipe
+            ///> we'll reconnect the socket and try one more time
+            $this->connectClient($cluster);
+            $response = $this->socketClient[$cluster]->sendAndGetResponse($toSend);
+        }
+        return $response;
+    }
+
+    protected function connectClient($cluster)
+    {
+        $this->socketClient[$cluster] = new SocketClient(config("matinCacher.clusters.$cluster.host"), config("matinCacher.clusters.$cluster.port"));
     }
 }
