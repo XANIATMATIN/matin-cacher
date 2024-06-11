@@ -161,4 +161,13 @@ class Cacher
     {
         $this->socketClient[$cluster] = new SocketClient(config("matinCacher.clusters.$cluster.host"), config("matinCacher.clusters.$cluster.port"));
     }
+
+    public function closeSocket()
+    {
+        foreach ($this->socketClient as $socketClient) {
+            if (($socketClient->isConnected)) {  ///> checking again bc sometimes even after re-connection the connection is still unavailable
+                return $socketClient->closeSocket();
+            }
+        }
+    }
 }
