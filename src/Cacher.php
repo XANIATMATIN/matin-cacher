@@ -144,17 +144,23 @@ class Cacher
     protected function sendData($toSend, $cluster)
     {
         $cluster = in_array($cluster, $this->availableClusters) ? $cluster : 'default';
-        if (empty($this->socketClient[$cluster])) {
+        if (!$this->socketIsConnected($cluster)) {
             $this->connectClient($cluster);
         }
         $response = $this->socketClient[$cluster]->sendAndGetResponse($toSend);
         if ($response === 'TryAgain') {
+            app('log')->info("TryAgain");
             ///> it means the write couldn't happen, probably bc of a broken pipe
             ///> we'll reconnect the socket and try one more time
             $this->connectClient($cluster);
             $response = $this->socketClient[$cluster]->sendAndGetResponse($toSend);
         }
         return $response;
+    }
+
+    protected function socketIsConnected($cluster)
+    {
+        return !empty($this->socketClient[$cluster]) && $this->socketClient[$cluster]->isConnected;
     }
 
     protected function connectClient($cluster)
@@ -164,10 +170,8 @@ class Cacher
 
     public function closeSocket()
     {
-        foreach ($this->socketClient as $socketClient) {
-            if (($socketClient->isConnected)) {  ///> checking again bc sometimes even after re-connection the connection is still unavailable
-                return $socketClient->closeSocket();
-            }
+        foreach ($this->socketClient ?? [] as $socketClient) {
+            return $socketClient->closeSocket();
         }
     }
 }
