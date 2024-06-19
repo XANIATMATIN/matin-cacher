@@ -149,7 +149,6 @@ class Cacher
         }
         $response = $this->socketClient[$cluster]->sendAndGetResponse($toSend);
         if ($response === 'TryAgain') {
-            app('log')->info("TryAgain");
             ///> it means the write couldn't happen, probably bc of a broken pipe
             ///> we'll reconnect the socket and try one more time
             $this->connectClient($cluster);
