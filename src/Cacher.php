@@ -6,7 +6,11 @@ namespace MatinUtils\MatinCacher;
 class Cacher
 {
     protected $socketClient;
-    protected $availableClusters = ['tables', 'nodes', 'localInventory', 'popularRoutes', 'default', 'supplier'];
+    protected $availableClusters = [];
+    public function __construct()
+    {
+        $this->availableClusters = array_keys(config('matinCacher.clusters'));
+    }
 
     public function setItem($item, $value)
     {
@@ -63,7 +67,7 @@ class Cacher
         ], $cluster);
     }
 
-    public function refreshTable(array $tables)
+    public function refreshTable(array $tables, string $cluster = 'tables')
     {
         return $this->sendData([
             'pid' => app('log-system')->getpid(),
@@ -72,10 +76,10 @@ class Cacher
             'data' => [
                 'tables' => $tables,
             ],
-        ], 'tables');
+        ], $cluster);
     }
 
-    public function getTDatabaseItem($table, array $conditions = [], array $pluck = [], int $count = 0)
+    public function getTDatabaseItem($table, array $conditions = [], array $pluck = [], int $count = 0, string $cluster = 'tables')
     {
         return $this->sendData([
             'pid' => app('log-system')->getpid(),
@@ -87,7 +91,7 @@ class Cacher
                 'pluck' => $pluck,
                 'count' => $count,
             ],
-        ], 'tables');
+        ], $cluster);
     }
 
     public function isCached(string $item)

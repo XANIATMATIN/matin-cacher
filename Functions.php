@@ -26,16 +26,16 @@ function getCachedItem($item)
     return $response === false ? $response : json_decode($response, true)['value'] ?? null;
 }
 
-function refreshCachedTables($tableNames)
+function refreshCachedTables($tableNames, string $cluster = 'tables')
 {
     $tableNames = (array) $tableNames;
-    $response = app('matin-cacher')->refreshTable($tableNames);
+    $response = app('matin-cacher')->refreshTable($tableNames, $cluster);
     return $response === false ? $response : json_decode($response, true);
 }
 
-function cachedDatabase(string $tableName, array $conditions = [], array $pluck = [], int $count = 0)
+function cachedDatabase(string $tableName, array $conditions = [], array $pluck = [], int $count = 0, string $cluster = 'tables')
 {
-    $response = app('matin-cacher')->getTDatabaseItem($tableName, $conditions, $pluck, $count);
+    $response = app('matin-cacher')->getTDatabaseItem($tableName, $conditions, $pluck, $count, $cluster);
     return $response === false ? $response : json_decode($response, true)['value'] ?? [];
 }
 
