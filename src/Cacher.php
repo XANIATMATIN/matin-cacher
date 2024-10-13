@@ -6,7 +6,7 @@ namespace MatinUtils\MatinCacher;
 class Cacher
 {
     protected $socketClient;
-    protected $availableClusters = ['tables', 'localInventory', 'popularRoutes', 'default', 'supplier'];
+    protected $availableClusters = ['tables', 'localInventory', 'popularRoutes', 'default', 'supplier', 'subscriptions'];
 
     public function setItem($item, $value)
     {
